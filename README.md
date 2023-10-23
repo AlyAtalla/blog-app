@@ -1,106 +1,108 @@
-![](https://img.shields.io/badge/Microverse-blueviolet)
+# blog-app
 
-# BlogAppOnRails
+# 📗 Table of Contents
+- [📖 About the Project](#about-project)
+    - [Tech Stack](#tech-stack)
+    - [Key Features](#key-features)
+- [💻 Getting Started](#getting-started)
+- [👥 Authors](#authors)
+- [🔭 Future Features](#future-features)
+- [🤝 Contributing](#contributing)
+- [⭐️ Show your support](#support)
+- [🙏 Acknowledgements](#acknowledgements)
+- [📝 License](#license)
+<!-- PROJECT DESCRIPTION -->
 
-> The Blog app is a classic example of a blog website. It's a functional website that shows the list of posts and empower readers to interact with them by adding comments and liking post.
+# 📖 [ blog-app] <a name="about-project"></a>
 
-## Built With
+**[ blog-app]** The Blog app is a classic example of a blog website. It's a functional website that shows the list of posts and empower readers to interact with them by adding comments and liking post.
 
-- Ruby
-- Rails
-- Postgresql
-
-## Getting Started
-
-To run this project, take a copy of the code and follow the instruction below.
-
-### Prerequisites
-
-You need Ruby v3+, Rails v7+ and Postgresql installed on your machine.
-
-### Setup
-
-`Clone the project`
-
-Install gems with:
-
-```
-bundle install
-```
-
-Setup database with:
-
-```
-rails db:create
-rails db:migrate
-```
-
-### Usage
-
-Start server with:
-
-```
-rails server
-```
-
-Visit http://localhost:3000/ in your browser.
-
-### Run tests
-
-Install npm with:
-
-Install rspec with:
-
-```
-bundle install
-```
-
-and
-
-```
-rails generate rspec:install
-```
-
-run the test with:
-
-```
-rspec spec
-```
-
-### Open API documentation
-
-```
-rails server
-```
-
-Visit http://localhost:3000/api-docs in your browser.
-
-### Usage
-
-- Run `rails server` to run the app.
-
-## Authors 1
+<a name="readme-top"></a>
 
 
-👤 **Aly-Atalla**
+### Tech Stack <a name="tech-stack"></a>
 
-- GitHub: [@alyatalla](https://github.com/AlyAtalla)
-- LinkedIn: [@alyatalla](https://www.linkedin.com/in/aly-atalla-8b83a0231/)
+<details>
+  <summary>Server</summary>
+  <ul>
+    <li><a href="https://rubygems.org">Ror</a></li>
+  </ul>
+</details>
 
-## 🤝 Contributing
+### Key Features <a name="key-features"></a>
+
+- **[Create multiple classes]**
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## 💻 Getting Started <a name="getting-started"></a>
+
+To get a local copy up and running, follow these steps.
+
+Clone this repository to your desired folder:
+
+git clone https://github.com/AlyAtalla/blog-app.git
+
+- To trace all linter errors, run
+  ...
+
+  rubocop -A
+  ...
+
+<!-- AUTHORS -->
+
+## 👥 Authors <a name="authors"></a>
+
+
+👤 **ALY ATALLA**
+
+- GitHub: [@githubhandle](https://github.com/AlyAtalla)
+
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- FUTURE FEATURES-->
+
+## 🔭 Future Features <a name="future-features"></a>
+
+
+- [ ] Add data processing and  variety of test cases
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- CONTRIBUTING -->
+
+## 🤝 Contributing <a name="contributing"></a>
 
 Contributions, issues, and feature requests are welcome!
 
 Feel free to check the [issues page](https://github.com/AlyAtalla/blog-app/issues).
 
-## Show your support
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-Give a ⭐️ if you like this project!
+<!-- SUPPORT -->
 
-## Acknowledgments
+## ⭐️ Show your support <a name="support"></a>
 
-- Microverse
+If you like this project, give it a star.
 
-## 📝 License
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ACKNOWLEDGEMENTS -->
+
+## 🙏 Acknowledgments <a name="acknowledgements"></a>
+
+I would like to thank microverse for this project
+
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- LICENSE -->
+
+## 📝 License <a name="license"></a>
 
 This project is [MIT](./LICENSE) licensed.
+
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
