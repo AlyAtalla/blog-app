@@ -327,9 +327,9 @@ DEPENDENCIES
   jwt
   pg
   puma (~> 5.0)
-  rack (~> 2.2.8)
+  rack (~> 2.2.4)
   rack-cors
-  rails (~> 7.0.4)
+  rails (~> 7.0.8)
   rails-controller-testing
   rspec-rails
   rubocop (~> 1.30)
