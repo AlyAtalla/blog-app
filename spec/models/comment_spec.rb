@@ -3,7 +3,9 @@ require 'rails_helper'
 RSpec.describe Comment, type: :model do
   describe 'Validations for the Comment model' do
     before(:each) do
-      @comment = Comment.new(text: 'One comment', author_id: 11, post_id: 2)
+      @user = User.create(username: 'testuser', email: 'test@example.com', password: 'password')
+      @post = Post.create(title: 'Test Post', content: 'This is a test post', author: @user)
+      @comment = @post.comments.build(text: 'One comment')
     end
 
     it 'is valid with all attributes present' do
