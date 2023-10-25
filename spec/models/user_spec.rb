@@ -61,9 +61,9 @@ RSpec.describe User, type: :model do
       password: 'password',
       name: 'Test User'
     )
-    post1 = Post.create(title: 'Post 1', content: 'Content 1', author: user)
-    post2 = Post.create(title: 'Post 2', content: 'Content 2', author: user)
-    post3 = Post.create(title: 'Post 3', content: 'Content 3', author: user)
+    Post.create(title: 'Post 1', content: 'Content 1', author: user)
+    Post.create(title: 'Post 2', content: 'Content 2', author: user)
+    Post.create(title: 'Post 3', content: 'Content 3', author: user)
     post4 = Post.create(title: 'Post 4', content: 'Content 4', author: user)
     expect(user.recent_posts).to eq([post4, post3, post2])
   end
