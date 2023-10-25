@@ -58,11 +58,11 @@ RSpec.describe Post, type: :model do
   describe '#last_five_comments' do
     it 'returns the last five comments in descending order of creation' do
       post = Post.create(title: 'Test Post')
-      comment2 = Comment.create(post: post, text: 'Comment 2')
-      comment3 = Comment.create(post: post, text: 'Comment 3')
-      comment4 = Comment.create(post: post, text: 'Comment 4')
-      comment5 = Comment.create(post: post, text: 'Comment 5')
-      comment6 = Comment.create(post: post, text: 'Comment 6')
+      comment2 = Comment.create(post:, text: 'Comment 2')
+      comment3 = Comment.create(post:, text: 'Comment 3')
+      comment4 = Comment.create(post:, text: 'Comment 4')
+      comment5 = Comment.create(post:, text: 'Comment 5')
+      comment6 = Comment.create(post:, text: 'Comment 6')
 
       last_five_comments = post.last_five_comments
 
