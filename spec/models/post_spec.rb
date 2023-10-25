@@ -1,54 +1,72 @@
 require 'rails_helper'
 
 RSpec.describe Post, type: :model do
-  # ...
+  describe 'associations' do
+    it 'belongs to an author' do
+      association = Post.reflect_on_association(:author)
+      expect(association.macro).to eq(:belongs_to)
+      expect(association.options[:class_name]).to eq('User')
+      expect(association.options[:foreign_key]).to eq('author_id')
+      expect(association.options[:counter_cache]).to be_truthy
+    end
 
-  it 'Title attribute should be less than 250 characters' do
-    subject.title = 'Your title with less than 250 characters' # Provide a valid title
-    expect(subject).to be_valid
+    it 'has many comments' do
+      association = Post.reflect_on_association(:comments)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:dependent]).to eq(:destroy)
+    end
+
+    it 'has many likes' do
+      association = Post.reflect_on_association(:likes)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:dependent]).to eq(:destroy)
+    end
   end
 
-  it 'Comments Counter attribute should be an integer number' do
-    subject.comments_counter = 'some random string'
-    expect(subject).to_not be_valid
+  describe 'validations' do
+    it 'validates presence of title' do
+      post = Post.new(title: nil)
+      expect(post).not_to be_valid
+    end
+
+    it 'validates maximum length of title' do
+      post = Post.new(title: 'a' * 251)
+      expect(post).not_to be_valid
+    end
+
+    it 'validates numericality of comments_counter' do
+      post = Post.new(comments_counter: 'abc')
+      expect(post).not_to be_valid
+    end
+
+    it 'validates numericality of likes_counter' do
+      post = Post.new(likes_counter: 'abc')
+      expect(post).not_to be_valid
+    end
+
+    it 'validates comments_counter to be greater than or equal to 0' do
+      post = Post.new(comments_counter: -1)
+      expect(post).not_to be_valid
+    end
+
+    it 'validates likes_counter to be greater than or equal to 0' do
+      post = Post.new(likes_counter: -1)
+      expect(post).not_to be_valid
+    end
   end
 
-  it 'Comments Counter attribute should be greater or equal to zero' do
-    subject.comments_counter = -4
-    expect(subject).to_not be_valid
-  end
+  describe '#last_five_comments' do
+    it 'returns the last five comments in descending order of creation' do
+      post = Post.create(title: 'Test Post')
+      comment2 = Comment.create(post: post, text: 'Comment 2')
+      comment3 = Comment.create(post: post, text: 'Comment 3')
+      comment4 = Comment.create(post: post, text: 'Comment 4')
+      comment5 = Comment.create(post: post, text: 'Comment 5')
+      comment6 = Comment.create(post: post, text: 'Comment 6')
 
-  it 'Likes Counter attribute should be an integer number' do
-    subject.likes_counter = 'some random string'
-    expect(subject).to_not be_valid
-  end
+      last_five_comments = post.last_five_comments
 
-  it 'Likes Counter attribute should be greater or equal to zero' do
-    subject.likes_counter = -4
-    expect(subject).to_not be_valid
-  end
-
-  it 'Author posts counter can be set' do
-    user = User.new(name: 'Tom', photo: 'https://unsplash.com/photos/F_-0BxGuVvo', bio: 'Teacher from Mexico.')
-    post = Post.new(title: 'Post One', text: 'This is the post one')
-    post.author = user
-    post.user_posts_counter = 3
-    expect(user.posts_counter).to eq(3)
-  end
-
-  it 'last_five_comments method should return the last five comments' do
-    post = described_class.create(title: 'Post One', text: 'This is the post one')
-    user = User.first
-
-    post.comments = [
-      Comment.new({ author: user, text: 'This is the comment one' }),
-      Comment.new({ author: user, text: 'This is the comment two' }),
-      Comment.new({ author: user, text: 'This is the comment three' }),
-      Comment.new({ author: user, text: 'This is the comment four' }),
-      Comment.new({ author: user, text: 'This is the comment five' }),
-      Comment.new({ author: user, text: 'This is the comment six' })
-    ]
-
-    expect(post.last_five_comments).to eq(post.comments.last(5))
+      expect(last_five_comments).to eq([comment6, comment5, comment4, comment3, comment2])
+    end
   end
 end
