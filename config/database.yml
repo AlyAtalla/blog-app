@@ -17,8 +17,8 @@ default: &default
   encoding: utf8
   database: blog_app_development
   pool: 5
-  username: blog_app
-  password: new_password
+  username: postgres
+  password: 0120852868
   host: localhost
 
 
@@ -27,8 +27,8 @@ development:
   adapter: postgresql
   encoding: unicode
   database: blog_app_development
-  username: blog_app
-  password: new_password
+  username: postgres
+  password: 0120852868
   host: localhost
   port: 5432
 
@@ -91,5 +91,5 @@ test:
 production:
   <<: *default
   database: blog_app_production
-  username: blog_app
-  password: new_password
+  username: postgres
+  password: 0120852868
