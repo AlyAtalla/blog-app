@@ -1,9 +1,9 @@
 class LikesController < ApplicationController
   def index
-    # Your index action
+    @likes = Like.all
   end
 
   def show
-    # Your show action 
+    @like = Like.find(params[:id])
   end
 end
