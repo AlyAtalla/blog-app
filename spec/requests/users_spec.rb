@@ -30,7 +30,7 @@ RSpec.describe 'Users', type: :request do
 
     it 'returns the correct placeholder text' do
       expect(response.body).to include('Users List')
-    end    
+    end
 
     it 'returns the correct placeholder' do
       expect(response.body).to include('User Details')
