@@ -28,6 +28,10 @@ RSpec.describe 'Users', type: :request do
       expect(response).to render_template('users/show')
     end
 
+    it 'returns the correct placeholder text' do
+      expect(response.body).to include('Users List')
+    end    
+
     it 'returns the correct placeholder' do
       expect(response.body).to include('User Details')
     end
