@@ -13,7 +13,12 @@ RSpec.describe 'Users', type: :request do
     it 'renders the correct template' do
       expect(response).to render_template('users/index')
     end
+
+    it 'returns the correct placeholder text' do
+      expect(response.body).to include('Users List')
+    end
   end
+
 
   describe 'GET /show' do
     before do
