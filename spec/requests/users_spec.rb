@@ -19,7 +19,6 @@ RSpec.describe 'Users', type: :request do
     end
   end
 
-
   describe 'GET /show' do
     before do
       get '/users/1'
