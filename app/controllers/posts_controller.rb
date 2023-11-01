@@ -7,6 +7,7 @@ class PostsController < ApplicationController
   end
 
   def show
+    @post = Post.find(params[:id])  # Find the post by its id
     @comment = Comment.new
   end
 
