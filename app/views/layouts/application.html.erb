@@ -1,24 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>BlogOnRails</title>
+    <title>BlogApp</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
   </head>
 
-    <body>
-    <%= render "layouts/navbar" %>
-    <% flash.each do |name, msg| -%>
-      <p class="bg-green p-1"><%= msg %></p>
-    <% end -%>
-    <div class="background-image">
-    <div class="container center">
-      <%= yield %>
-    </div>
-    </div>
-
+  <body>
+    <%= yield %>
   </body>
 </html>
