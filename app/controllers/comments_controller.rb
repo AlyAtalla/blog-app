@@ -9,6 +9,10 @@ class CommentsController < ApplicationController
     render status: :ok
   end
 
+  def new
+    @comment = Comment.new
+  end
+
   def create
     @comment = Comment.new(comment_params)
 
