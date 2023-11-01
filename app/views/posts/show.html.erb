@@ -11,8 +11,9 @@
        <%=@post.text%>
     </div>
      <div class="comment-container">
-        <%@post.comments.each do |comment|%>
-          <span> <%= comment.author.name%> :<%= comment.text%></span>
-          <%end%>
+         <% @post.comments.each do |comment| %>
+     <span><%= comment.author.name if comment.author %>: <%= comment.text %></span>
+   <% end %>
+
      </div>
 </div>
