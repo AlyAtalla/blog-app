@@ -1,14 +1,40 @@
 class PostsController < ApplicationController
-  # index action displaying a list of posts belonging to a specific user
-  # first retrieves the user record base on user_id
-  # next fetches all posts associated with that user using @user.posts
+  before_action :set_user, only: [:index, :create]
+  before_action :set_post, only: [:show, :like]
 
   def index
-    @user = User.find(params[:user_id])
     @posts = @user.posts
   end
 
   def show
+    @comment = Comment.new
+  end
+
+  def create
+    @post = @user.posts.build(post_params)
+    if @post.save
+      redirect_to post_path(@post), notice: 'Post created successfully.'
+    else
+      render :new
+    end
+  end
+
+  def like
+    @post.likes.create(user: current_user)
+    redirect_to post_path(@post), notice: 'Post liked successfully.'
+  end
+
+  private
+
+  def set_user
+    @user = User.find(params[:user_id])
+  end
+
+  def set_post
     @post = Post.find(params[:id])
+  end
+
+  def post_params
+    params.require(:post).permit(:title, :content)
   end
 end
