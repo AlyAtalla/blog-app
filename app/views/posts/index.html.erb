@@ -26,12 +26,13 @@
             </div>
             <h4 class="comment-title">Comments</h4>
             <div class="comment-container">
-                <% post.recent_comments.each do |comment|%>
-                    <span><%= comment.author.name%> : <%= comment.text%></span>
-                <% end %>
-            </div>
+  <% post.recent_comments.each do |comment| %>
+    <span>
+      <%= comment.author&.name || "Anonymous" %> : <%= comment.text %>
+    </span>
+    <% end %>
         </div>
-         
+        </div>
         <% end %>
     <% end %>
 </div>
