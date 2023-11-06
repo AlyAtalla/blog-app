@@ -1,31 +1,26 @@
 class CommentsController < ApplicationController
-  def index
-    @comments = Comment.all
-    render status: :ok
-  end
-
-  def show
-    @comment = Comment.find(params[:id])
-    render status: :ok
-  end
-
   def new
     @comment = Comment.new
   end
 
   def create
     @comment = Comment.new(comment_params)
+    @post = Post.find(params[:post_id])
+    # @comment.author_id = current_user.id
+    @comment.author = User.find(params[:user_id])
+    @comment.post_id = @post.id
 
     if @comment.save
-      render json: @comment, status: :created
+      redirect_to user_post_path(user_id: @post.author, id: @post.id)
     else
-      render json: @comment.errors, status: :unprocessable_entity
+      flash[:alert] = 'An error has occurred while creating the comment'
+      render :new
     end
   end
 
   private
 
   def comment_params
-    params.require(:comment).permit(:content)
+    params.require(:comment).permit(:text)
   end
 end
