@@ -19,7 +19,7 @@ class PostsController < ApplicationController
   def create
     @post = Post.new(post_params)
     @post.author = current_user
-  
+
     if @post.save
       flash[:notice] = 'Post created successfully!'
       redirect_to user_posts_path(id: @post.id)
@@ -27,7 +27,7 @@ class PostsController < ApplicationController
       flash[:alert] = 'Cannot create a new post'
       render :new
     end
-  end  
+  end
 
   private
 

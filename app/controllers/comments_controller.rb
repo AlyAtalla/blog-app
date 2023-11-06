@@ -8,14 +8,14 @@ class CommentsController < ApplicationController
     @post = Post.find(params[:post_id])
     @comment.author = current_user
     @comment.post_id = @post.id
-  
+
     if @comment.save
       redirect_to user_post_path(user_id: @post.author, id: @post.id)
     else
       flash[:alert] = 'An error has occurred while creating the comment'
       render :new
     end
-  end  
+  end
 
   private
 
