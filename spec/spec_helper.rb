@@ -14,6 +14,7 @@
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
+  require 'capybara/rspec'
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
@@ -60,7 +61,7 @@ RSpec.configure do |config|
   #
   #   # Limits the available syntax to the non-monkey patched syntax that is
   #   # recommended. For more details, see:
-  #   # https://relishapp.com/rspec/rspec-core/docs/configuration/zero-monkey-patching-mode
+  #   # https://rspec.info/features/3-12/rspec-core/configuration/zero-monkey-patching-mode/
   #   config.disable_monkey_patching!
   #
   #   # This setting enables warnings. It's recommended, but in some cases may
