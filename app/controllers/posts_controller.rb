@@ -5,7 +5,8 @@ class PostsController < ApplicationController
 
   def index
     @user = User.find(params[:user_id])
-    @posts = @user.posts
+    # @posts = @user.posts
+    @posts = @user.posts.includes(:comments)
   end
 
   def show
@@ -18,7 +19,7 @@ class PostsController < ApplicationController
 
   def create
     @post = Post.new(post_params)
-    @post.author = current_user
+    @post.author = User.find(params[:user_id])
 
     if @post.save
       flash[:notice] = 'Post created successfully!'
