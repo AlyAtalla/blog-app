@@ -6,18 +6,17 @@
              <li>Likes:<%=@post.likes_counter%></li>
          </ul>
    </div>
+   
     <h4 class="comment-title"> Comments</h4>
     <div class="post-body">
        <%=@post.text%>
     </div>
+
      <div class="comment-container">
-  <% @post.comments.each do |comment| %>
-    <span>
-      <%= comment.author&.name || "Anonymous" %> :
-      <%= comment.text %>
-    </span>
-  <% end %>
-</div>
+        <%@post.comments.each do |comment|%>
+          <span> <%= comment.author.name%> :<%= comment.text%></span>
+          <%end%>
+     </div>
 
         <div class="like-comment-container">
             <%= form_with model: @like, url:user_post_likes_path(post_id: @post.id) do |l| %>
