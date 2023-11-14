@@ -1,3 +1,18 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,6 +22,11 @@
 
 .user-title {
   text-align: center;
+}
+
+.user-card-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .user-card {
@@ -55,13 +75,13 @@
 .post-container {
   width: 80%;
   padding: 0;
-  margin: 1.2rem auto;
+  margin: 1.2rem auto 0 auto;
 }
 
 .post-card {
   border: 1px solid black;
   padding: 10px;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.4rem;
 }
 
 .post-card h2 {
@@ -127,6 +147,170 @@
 }
 
 .post-card-container {
-  margin: 2rem 0 4rem 0;
-  border-bottom: 1px solid black;
+  margin: 2rem 0 0.5rem 0;
+}
+
+.new-post-btn {
+  border: 1px solid black;
+  padding: 5px 10px;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  margin-right: 1rem;
+  display: inline-block;
+  text-align: center;
+}
+
+.like-comment-container {
+  display: flex;
+  align-items: center;
+}
+
+.post-btn {
+  width: 150px;
+  margin: 0.3rem auto;
+  background-color: black;
+  color: white;
+}
+
+.new-post-section {
+  height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.new-post-container {
+  width: 40%;
+  border: 1px solid black;
+  padding: 20px 40px;
+}
+
+.new-post-container form {
+  margin: 0.3rem auto;
+}
+
+.text-container {
+  display: flex;
+  align-items: center;
+}
+
+.new-post-container h1 {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+#post_title {
+  margin: 1rem auto;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+#post_text,
+#comment_text {
+  margin: 0.5rem;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.submit-btn {
+  background-color: black;
+  color: white;
+}
+
+/* -----------sign up and log in form-------------- */
+
+.sign-up-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.sign-up-h2 {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.sign-up-form-container {
+  width: 60%;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+label {
+  font-size: 20px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px 0;
+  border-radius: 5px;
+}
+
+.actions {
+  margin-top: 10px;
+}
+
+.sign-up-btn {
+  padding: 10px;
+  background-color: #fff;
+  width: 100%;
+  margin-bottom: 10px;
+  box-shadow: 3px 3px black;
+}
+
+.sign-up-btn:hover {
+  box-shadow: none;
+}
+
+button[type="submit"] {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* --log in-- */
+
+.log-in-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.sign-in-h2 {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.log-in-form-container {
+  width: 60%;
+}
+
+input[type="email"],
+input[type="password"] {
+  padding: 10px 0;
+  border-radius: 5px;
+}
+
+.log-in-btn {
+  padding: 10px;
+  background-color: #fff;
+  width: 100%;
+  margin-bottom: 10px;
+  box-shadow: 3px 3px black;
+}
+
+.log-in-btn:hover {
+  box-shadow: none;
 }
