@@ -1,4 +1,4 @@
-# blog-app
+# Blog-app
 
 # 📗 Table of Contents
 - [📖 About the Project](#about-project)
@@ -56,7 +56,11 @@ git clone https://github.com/AlyAtalla/blog-app.git
 
 👤 **ALY ATALLA**
 
-- GitHub: [@githubhandle](https://github.com/AlyAtalla)
+- GitHub: [@githubhandle](https://github.com/AlyAtalla).
+
+👤 **Zelalem Yohannes**
+- GitHub: [@githubhandle](https://github.com/Zel-hub7)
+- Linkedin: [@Linkedin](https://www.linkedin.com/in/zelalem-yohannes-40356a239/)
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
