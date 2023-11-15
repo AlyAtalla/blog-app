@@ -1,40 +1,31 @@
-<h1 class="post-title"><%= @user.name%>'s Posts</h1>
-  <div class="user-card-container">
-   <div class="user-card" >
-        <div class="user-img">
-            <img src=<%= @user.photo %> width="100px"  height = "100px" class="user-photo">
-        </div>
-        <div class="user-info">
-            <h2><%= @user.name %></h2>
-            <h2 class="post-counter">Number of posts: <%= @user.posts_counter %></h2>
-        </div>
-    </div>
-          <%= link_to "Add a new post", new_user_post_path(user_id: @user.id), class: "new-post-btn post-btn"%>
-  </div>
+<div class="user">
+   <%= render partial: "users/user_info", locals: { user: @user } %>
+</div>
 
-<div class="post-container">
-    <% @posts.each do |post|%>
-    <%= link_to user_post_path(user_id: post.author_id, id: post.id) do%>
-        <div class="post-card-container">
-             <div class="post-card">
-                <h2><%= post.title %></h2>
-                <p><%= post.text %></p>
-                <div class="reactions">
-                    <span>Comments <%= post.comments_counter%> </span>
-                    <span>Likes <%= post.likes_counter%> </span>
-                </div>
-            </div>
-            <h4 class="comment-title">Comments</h4>
-            <div class="comment-container">
-                <% post.recent_comments.each do |comment|%>
-                    <span><%= comment.author.name%> : <%= comment.text%></span>
-                <% end %>
-            </div>
-        </div>
-         
+<% flash.each do |name, msg| -%>
+  <%= content_tag :div, msg, class: name %>
+<% end -%>
+
+<% if (can? :create, Post) && current_user.id == @user.id %>
+  <%= link_to 'Create New Post', new_user_post_path %>
+<% end %>
+
+<ul id="posts_container">
+  <% @posts.each_with_index do |post, i| %>
+    <li>
+      <%= link_to "/users/#{@user.id}/posts/#{post.id}", class: "post" do %>
+        <%= render partial: "posts/post_info", locals: { post: post } %>
+      <% end %>
+      <ul class="comments_container">
+      <h3>Comments:</h3>
+        <% post.five_recent_comments.includes([:user]).each do |comment| %>
+          <li class="comment">
+            <p><%= comment.user.name %>: <%= comment.text %></p>
+          </li>
         <% end %>
-    <% end %>
- <div>
-     <a class='pagination-btn' href='#'>Pagination</a>
-</div>
-</div>
+      </ul>
+    </li>
+  <% end %>
+</ul>
+
+<%= will_paginate %>

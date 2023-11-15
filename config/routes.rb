@@ -1,23 +1,19 @@
 Rails.application.routes.draw do
-  get '/sign_out_user', to: 'users#sign_out_user', as: 'sign_out_user'
   devise_for :users
-  get 'comments/new'
-  get 'comments/create'
-  get 'likes/new'
-  get 'likes/create'
-  root "users#index"
-  resources :users, only: [:index, :show] do
-    resources :posts, only: [:index, :show, :new, :create] do
-      resources :comments, only: [:new, :create]
-        resources :likes, only: [:new, :create]
-      end
+  devise_scope :user do
+    authenticated :user do
+      root :to => 'users#index', as: :authenticated_root
+    end
+    unauthenticated :user do
+      root :to => 'login#index', as: :unauthenticated_root
+    end
   end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
-
-  # Defines the root path route ("/")
-  # root "posts#index"
+  get '/login', to: 'login#index'
+  resources :users, only: [:index, :show] do
+    resources :posts, only: [:index, :new, :create, :show, :destroy] do
+      resources :comments, only: [:new, :create, :destroy]
+      resources :likes, only: [:create, :destroy]
+    end
+  end
 end

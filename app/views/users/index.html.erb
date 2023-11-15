@@ -1,15 +1,9 @@
-<%# The render method is used to render the partials/user partial for each user object in the @users collection. %>
-<%# The render method automatically assigns each element of the collection to a local variable within the partial. %>
-<%# @users is an instance variable that typically holds a collection of user objects. %>
-
-<div class = " flex justify-center items-center">
-    <h1 class="user-title font-bold text-4xl my-10 me-4"> Welcome To User Page</h1>
-<%= link_to "Log Out", sign_out_user_path %>
-</div>
-
-<div class="user-container">
-  <ul>
-    <%= render partial:'partials/user', collection:@users%>  
-  </ul>
-</div>
-
+<ul id="users_container">
+  <% @users.each do |user| %>
+    <li>
+      <%= link_to user_url(user), class: "user", id: user.name do %>
+        <%= render partial: "users/user_info", locals: { user: user } %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

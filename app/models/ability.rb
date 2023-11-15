@@ -2,21 +2,20 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
-    user ||= User.new # guest user (not logged in)
-    if user.admin?
-      can :manage, :all
-    else
-      can :read, :all
-      can :create, Post
-      can :create, Comment
-      can :create, Like
+    can :read, Post # start by defining rules for all users, also not logged ones
+    return unless user.present?
 
-      can :destroy, Post do |post|
-        post.author_id == user.id
-      end
-      can :destroy, Comment do |comment|
-        comment.author_id == user.id
-      end
-    end
+    # if the user is logged in can create posts, comments, and likes
+    can :create, Post
+    can :create, Comment
+    can :create, Like
+
+    can :destroy, Post, author_id: user.id # if the user is logged in can delete its own posts
+    can :destroy, Comment, user_id: user.id # if the user is logged in can delete its own comments
+    can :destroy, Like, user_id: user.id # if the user is logged in can delete its own likes
+
+    return unless user.admin?
+
+    can :manage, :all # give all remaining permissions only to the admins
   end
 end

@@ -1,15 +1,15 @@
-<section class="new-post-section">
-<div class="new-post-container">
-        <h1>Add a new comment</h1>
-<%= form_with model: @comment, url: user_post_comments_path do |c| %>
-<div class="text-container">
-     <%= c.label :text%>
-    <%= c.text_area :text, cols: 30, rows:1%><br>
-</div>
+<h1>Create a new Comment</h1>
 
-    <%= c.submit "Submit", class:"new-post-btn submit-btn" %>
+<% flash.each do |name, msg| -%>
+  <%= content_tag :div, msg, class: name %>
+<% end -%>
+
+<%= form_with model: [:user, :post, @comment], data: { turbo: false }, local: true do |f| %>
+  <div>
+    <%= f.label :text %><br>
+    <%= f.text_field :text %><br>
+    <%= f.hidden_field :user_id, value: params[:user_id] %>
+    <%= f.hidden_field :post_id, value: params[:post_id] %>
+    <%= f.submit "Comment" %>
+  </div>
 <% end %>
-</div>
-
-</section>
-
