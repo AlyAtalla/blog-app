@@ -1,12 +1,10 @@
 class PostsController < ApplicationController
-  # index action displaying a list of posts belonging to a specific user
-  # first retrieves the user record base on user_id
-  # next fetches all posts associated with that user using @user.posts
-
+  load_and_authorize_resource
+  layout 'standard'
   def index
     @user = User.find(params[:user_id])
-    # @posts = @user.posts
-    @posts = @user.posts.includes(:comments)
+    @posts = Post.where(author_id: params[:user_id]).order(id: :asc)
+    @posts = @posts.paginate(page: params[:page], per_page: 5)
   end
 
   def show
@@ -19,15 +17,22 @@ class PostsController < ApplicationController
 
   def create
     @post = Post.new(post_params)
-    @post.author = User.find(params[:user_id])
-
+    @post.author = current_user
     if @post.save
-      flash[:notice] = 'Post created successfully!'
-      redirect_to user_posts_path(id: @post.id)
+      flash[:success] = 'Post created successfully!'
+      redirect_to user_posts_url
     else
-      flash[:alert] = 'Cannot create a new post'
-      render :new
+      flash.now[:error] = 'Error: Post could not be created!'
+      render :new, locals: { post: @post }
     end
+  end
+
+  def destroy
+    @post = Post.find(params[:id])
+    @post.author.decrement!(:posts_counter)
+    @post.destroy!
+    flash[:success] = 'Post was deleted successfully!'
+    redirect_to user_posts_url
   end
 
   private
