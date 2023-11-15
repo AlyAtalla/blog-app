@@ -1,16 +1,13 @@
 class LikesController < ApplicationController
-  def new
-    @like = Like.new
-  end
-
+  layout 'standard'
   def create
-    @post = Post.find(params[:post_id])
-    @like = Like.new(author_id: current_user.id, post_id: @post.id)
+    @like = Like.new(post_id: params[:post_id], user_id: params[:user_id])
+    @like.user = current_user
     if @like.save
-      redirect_to user_post_path(user_id: @post.author_id, id: @post.id)
+      flash[:success] = 'Liked!'
+      redirect_to user_post_path(id: @like.post_id, user_id: @like.user_id)
     else
-      flash[:alert] = 'Can not add new like'
-      render :new
+      flash.now[:error] = 'Something went wrong!'
     end
   end
 end

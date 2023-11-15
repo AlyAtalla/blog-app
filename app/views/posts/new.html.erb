@@ -1,17 +1,17 @@
-<section class="new-post-section">
-  <div class="new-post-container">
-       <h1>Add a new post</h1>
-       <%= form_with model:@post, url:user_posts_path do |form|%>
-        <%= form.label :title%>
-        <%= form.text_field  :title%><br>
+<h1>Create a new Post</h1>
 
-        <div class="text-container">
-          <%= form.label :text%>
-           <%= form.text_area :text, cols:40, row:1%>
-        </div>
+<% flash.each do |name, msg| -%>
+  <%= content_tag :div, msg, class: name %>
+<% end -%>
 
-        <%=form.submit "Submit", class:"new-post-btn submit-btn"%>
-     <% end%>
+<%= form_with model: [:user, @post], data: { turbo: false }, local: true do |f| %>
+  <div>
+    <%= f.label :title %><br>
+    <%= f.text_field :title %><br>
+    <%= f.label :text %><br>
+    <%= f.text_area :text %><br>
+    <%= f.submit "Create Post" %>
   </div>
+<% end %>
 
-</section>
+
