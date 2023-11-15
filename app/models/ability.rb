@@ -14,8 +14,8 @@ class Ability
     can :destroy, Comment, user_id: user.id # if the user is logged in can delete its own comments
     can :destroy, Like, user_id: user.id # if the user is logged in can delete its own likes
 
-    if user.admin?
-      can :manage, :all # give all remaining permissions only to the admins
-    end
+    return unless user.admin?
+
+    can :manage, :all # give all remaining permissions only to the admins
   end
 end
