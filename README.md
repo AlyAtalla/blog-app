@@ -58,9 +58,6 @@ git clone https://github.com/AlyAtalla/blog-app.git
 
 - GitHub: [@githubhandle](https://github.com/AlyAtalla).
 
-👤 **Zelalem Yohannes**
-- GitHub: [@githubhandle](https://github.com/Zel-hub7)
-- Linkedin: [@Linkedin](https://www.linkedin.com/in/zelalem-yohannes-40356a239/)
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
