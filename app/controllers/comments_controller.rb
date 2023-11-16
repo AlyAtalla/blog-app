@@ -7,6 +7,8 @@ class CommentsController < ApplicationController
 
   def create
     @comment = Comment.new(comment_params)
+    @comment.user_id = current_user.id  # Set the user_id explicitly
+
     if @comment.save
       flash[:success] = 'Comment created successfully!'
       redirect_to user_post_path(id: @comment.post_id, user_id: @comment.user_id)
@@ -15,7 +17,7 @@ class CommentsController < ApplicationController
       render :new, locals: { comment: @comment }
     end
   end
-
+  
   def destroy
     @comment = Comment.find(params[:id])
     @comment.post.decrement!(:comments_counter)
