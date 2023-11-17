@@ -5,13 +5,17 @@ class Api::CommentsController < Api::ApplicationController
   end
 
   def create
+    if current_user.nil?
+      render json: { error: 'User not authenticated' }, status: :unauthorized
+      return
+    end
+
     @comment = Comment.new(user_id: current_user.id, post_id: comment_params[:post_id], text: comment_params[:text])
 
     if @comment.save
       render json: @comment, status: :created
     else
-      render json: { errors: @comment.errors.full_messages },
-             status: :unprocessable_entity
+      render json: { errors: @comment.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
