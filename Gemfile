@@ -5,6 +5,8 @@ ruby '3.2.2'
 
 gem 'cancancan'
 gem 'devise'
+gem 'jwt'
+gem 'mailcatcher'
 gem 'sass-rails'
 
 # Rubocop linters

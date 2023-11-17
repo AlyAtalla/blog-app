@@ -32,6 +32,8 @@
 ### Key Features <a name="key-features"></a>
 
 - **[Create multiple classes]**
+- **[Add integration tests]**
+- **[Add API end points]**
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

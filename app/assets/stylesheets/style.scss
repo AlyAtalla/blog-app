@@ -1,11 +1,11 @@
-$purple-light: #9b95f5;
-$purple-dark: #4a4763;
-$light-background: #363636;
-$dark-background: #2b2b2b;
-$white-text: #fff;
-$pale-text: #e2e2e2;
-$imortant-text: #2b2b2b;
-$border-grey: #a7a7a7;
+$purple-light: #a05eff;
+$purple-dark: #574d6f;
+$light-background: #484848;
+$dark-background: #3e3e3e;
+$white-text: #f5f5f5;
+$pale-text: #c9c9c9;
+$important-text: #3e3e3e;
+$border-grey: #8a8a8a;
 
 * {
   margin: 0;
@@ -65,13 +65,13 @@ h3 {
 
 .pagination a {
   text-decoration: underline;
-  color: rgb(159, 154, 231);
+  color: #9f9ae7;
 }
 
 .comments_container,
 #user_bio {
-  border: 1px solid rgb(159, 154, 231);
-  background-color: rgb(59, 58, 71);
+  border: 1px solid #9f9ae7;
+  background-color: #3b3a47;
   color: $pale-text;
 }
 
@@ -123,7 +123,7 @@ h3 {
 
 .alert,
 .notice {
-  color: $purple-light;
+  color: #a05eff;
 }
 
 .post {
@@ -155,7 +155,7 @@ h3 {
 }
 
 #welcome h1 {
-  color: $purple-light;
+  color: #a05eff;
   margin-bottom: 2rem;
 }
 
