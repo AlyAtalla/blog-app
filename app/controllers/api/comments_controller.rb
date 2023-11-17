@@ -1,15 +1,12 @@
 class Api::CommentsController < Api::ApplicationController
+  before_action :authenticate_user!, only: [:create]
+
   def index
     @comments = Comment.where(post_id: params[:post_id]).order(id: :asc)
     render json: @comments, status: :ok
   end
 
   def create
-    if current_user.nil?
-      render json: { error: 'User not authenticated' }, status: :unauthorized
-      return
-    end
-
     @comment = Comment.new(user_id: current_user.id, post_id: comment_params[:post_id], text: comment_params[:text])
 
     if @comment.save
