@@ -9,16 +9,18 @@ class CommentsController < ApplicationController
       format.json { render json: @comments }
     end
   end
+
   def create
     post = Post.find(params[:post_id])
     @comment = post.comments.new(author: current_user, **comment_params)
-      if @comment.save
-        flash[:notice] = 'Comment created successfully!'
-        redirect_to user_post_path(post.author, post)
-      else
-        flash[:alert] = 'Comment was not created!'
-      end
+    if @comment.save
+      flash[:notice] = 'Comment created successfully!'
+      redirect_to user_post_path(post.author, post)
+    else
+      flash[:alert] = 'Comment was not created!'
+    end
   end
+
   def destroy
     @comment = Comment.find(params[:id])
     post = @comment.post
@@ -29,7 +31,9 @@ class CommentsController < ApplicationController
     end
     redirect_to user_post_path(post.author, post), status: :see_other
   end
+
   private
+
   def comment_params
     params.require(:comment).permit(:text)
   end
