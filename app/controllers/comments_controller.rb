@@ -1,34 +1,36 @@
 class CommentsController < ApplicationController
   load_and_authorize_resource
-  layout 'standard'
-  def new
-    @comment = Comment.new
-  end
-
-  def create
-    @comment = Comment.new(comment_params)
-    @comment.user_id = current_user.id # Set the user_id explicitly
-
-    if @comment.save
-      flash[:success] = 'Comment created successfully!'
-      redirect_to user_post_path(id: @comment.post_id, user_id: @comment.user_id)
-    else
-      flash.now[:error] = 'Error: Comment could not be created!'
-      render :new, locals: { comment: @comment }
+  def index
+    @user = User.find(params[:user_id])
+    @post = @user.posts.find(params[:post_id])
+    @comments = @post.comments
+    respond_to do |format|
+      format.html
+      format.json { render json: @comments }
     end
   end
-
+  def create
+    post = Post.find(params[:post_id])
+    @comment = post.comments.new(author: current_user, **comment_params)
+      if @comment.save
+        flash[:notice] = 'Comment created successfully!'
+        redirect_to user_post_path(post.author, post)
+      else
+        flash[:alert] = 'Comment was not created!'
+      end
+  end
   def destroy
     @comment = Comment.find(params[:id])
-    @comment.post.decrement!(:comments_counter)
-    @comment.destroy!
-    flash[:success] = 'Comment was deleted successfully!'
-    redirect_to user_post_path(id: @comment.post_id, user_id: @comment.user_id)
+    post = @comment.post
+    if @comment.destroy
+      flash[:notice] = 'Comment deleted successfully!'
+    else
+      flash[:alert] = 'Error deleting the comment!'
+    end
+    redirect_to user_post_path(post.author, post), status: :see_other
   end
-
   private
-
   def comment_params
-    params.require(:comment).permit(:text, :user_id, :post_id)
+    params.require(:comment).permit(:text)
   end
 end
