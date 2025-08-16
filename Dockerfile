@@ -25,7 +25,7 @@ COPY . .
 
 ARG RAILS_MASTER_KEY
 ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
-ENV SECRET_KEY_BASE=placeholder_secret_key_base
+ENV SECRET_KEY_BASE=fa9e012cc6a5e32ac663547873d66986c9a22a5e2b6cead93777921c9ee9ed46330beedda43cedceae1e5d2ea9576cb135a9b35a899bd8e4824d922cf41586b
 RUN RAILS_ENV=production bundle exec rails assets:precompile
 
 # --- Final image ---
