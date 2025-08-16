@@ -34,3 +34,16 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 .env
+# Rails
+/log/*
+/tmp/*
+/storage/*
+/public/assets/*
+/public/packs/*
+
+# Credentials & env
+/.env
+/config/master.key
+
+# OS & editor
+.DS_Store
