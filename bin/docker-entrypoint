@@ -1,14 +1,8 @@
-#!/bin/bash
-set -e
+#!/bin/bash -e
 
-# Ensure RAILS_ENV is set
-: "${RAILS_ENV:=production}"
-
-# Only run migrations if starting the Rails server
-if [ "$1" == "bin/rails" ] && [ "$2" == "server" ]; then
-  echo "Preparing database..."
-  bundle exec rails db:create db:migrate db:seed 2>/dev/null || true
+# Prepare the database only when starting Rails server
+if [ "$1" == "./bin/rails" ] && [ "$2" == "server" ]; then
+  ./bin/rails db:prepare
 fi
 
-# Execute the container's CMD
 exec "$@"

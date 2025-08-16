@@ -35,9 +35,6 @@ module BlogApp
       end
     end
 
-    # Use Rails credentials (requires master key)
-    config.require_master_key = true
-
     # Serve static files and log to stdout for Railway
     config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
     config.logger = Logger.new(STDOUT) if ENV['RAILS_LOG_TO_STDOUT'].present?
