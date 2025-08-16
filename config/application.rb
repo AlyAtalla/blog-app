@@ -11,33 +11,38 @@ module BlogApp
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
-    # Add all subdirectories of `lib` to the autoload paths, except for `assets` and `tasks`.
+    # Add all subdirectories of `lib` to autoload paths, except 'assets' and 'tasks'
     Dir[Rails.root.join('lib', '**/')].each do |directory|
-      config.autoload_paths << directory unless %w(assets tasks).include?(File.basename(directory))
+      config.autoload_paths << directory unless %w[assets tasks].include?(File.basename(directory))
     end
 
     # ----------------------------
     # Skip database initialization when precompiling assets
+    # Useful for Docker / Railway builds
     # ----------------------------
     if ENV['RAILS_SKIP_DATABASE'] == 'true'
       config.before_initialize do
-        ActiveRecord::Base.establish_connection = -> { } # no-op
+        # No-op for database connection
+        ActiveRecord::Base.establish_connection = -> { }
       end
+
       config.active_record.migration_error = false
       config.active_record.dump_schema_after_migration = false
-      config.active_record.database_selector = nil
-      config.active_record.database_resolver = nil
-      config.active_record.database_resolver_context = nil
       config.active_record.maintain_test_schema = false
       config.active_record.schema_format = :ruby
-      config.active_record.sqlite3.represent_boolean_as_integer = true if defined?(ActiveRecord::ConnectionAdapters::SQLite3Adapter)
+      if defined?(ActiveRecord::ConnectionAdapters::SQLite3Adapter)
+        config.active_record.sqlite3.represent_boolean_as_integer = true
+      end
     end
-    # Configuration for the application, engines, and railties goes here.
-    #
-    # These settings can be overridden in specific environments using the files
-    # in config/environments, which are processed later.
-    #
-    # config.time_zone = "Central Time (US & Canada)"
-    # config.eager_load_paths << Rails.root.join("extras")
+
+    # Use Rails credentials (requires master key)
+    config.require_master_key = true
+
+    # Serve static files and log to stdout for Railway
+    config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
+    config.logger = Logger.new(STDOUT) if ENV['RAILS_LOG_TO_STDOUT'].present?
+
+    # Optional: set timezone (adjust as needed)
+    # config.time_zone = "Cairo"
   end
 end
