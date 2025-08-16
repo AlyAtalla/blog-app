@@ -23,7 +23,10 @@ RUN bundle install --jobs 4 --retry 3
 
 COPY . .
 
-RUN SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bundle exec rails assets:precompile
+ARG RAILS_MASTER_KEY
+ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+ENV SECRET_KEY_BASE=placeholder_secret_key_base
+RUN RAILS_ENV=production bundle exec rails assets:precompile
 
 # --- Final image ---
 FROM base
