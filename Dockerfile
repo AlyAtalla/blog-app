@@ -1,51 +1,33 @@
-# syntax = docker/dockerfile:1
+# --------------------- Base Image ---------------------
+FROM ruby:3.2.2
 
-ARG RUBY_VERSION=3.2.2
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
+# Install dependencies
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs yarn
 
-WORKDIR /rails
+# Set working directory
+WORKDIR /app
 
-ENV RAILS_ENV=production \
-    BUNDLE_DEPLOYMENT=1 \
-    BUNDLE_PATH=/usr/local/bundle \
-    BUNDLE_WITHOUT=development:test \
-    SECRET_KEY_BASE=${SECRET_KEY_BASE} \
-    RAILS_LOG_TO_STDOUT=true \
-    RAILS_SERVE_STATIC_FILES=true
+# Copy Gemfiles first to leverage caching
+COPY Gemfile* ./
+RUN bundle install
 
-# --------------------- Build Stage ---------------------
-FROM base as build
-
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config
-
-COPY Gemfile Gemfile.lock ./
-RUN bundle install --jobs 4 --retry 3
-
+# Copy the rest of the app
 COPY . .
 
-RUN bundle exec bootsnap precompile app/ lib/
-RUN chmod +x bin/* && sed -i "s/\r$//g" bin/* && sed -i 's/ruby\.exe$/ruby/' bin/*
-
-# Precompile assets
+# --------------------- Precompile Assets ---------------------
+# Prevent database connection during precompile
+ENV RAILS_ENV=production
 ENV RAILS_SKIP_DATABASE=true
+ENV SECRET_KEY_BASE=fa9e012cc6a5e32ac663547873d66986c9a22a5e2b6cead93777921c9ee9ed46330beedda43cedceae1e5d2ea9576cb135a9b35a899bd8e4824d922cf41586b
+
 RUN bundle exec rake assets:precompile
 
 # --------------------- Final Stage ---------------------
-FROM base
+# Reset skip DB for runtime
+ENV RAILS_SKIP_DATABASE=false
 
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libvips postgresql-client && \
-    rm -rf /var/lib/apt/lists/*
-
-COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build /rails /rails
-
-RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-
-USER rails:rails
-
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+# Expose the port your app runs on
 EXPOSE 8080
-CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "8080"]
+
+# Start the server
+CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "8080"]
