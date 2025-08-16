@@ -1,25 +1,25 @@
 default: &default
   adapter: postgresql
   encoding: unicode
+  # Use connection pool (default 5 is usually fine)
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: <%= ENV.fetch("POSTGRES_USER") { "aly" } %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD") { "mypassword" } %>
+  host: <%= ENV.fetch("POSTGRES_HOST") { "localhost" } %>
+  port: <%= ENV.fetch("POSTGRES_PORT") { 5432 } %>
 
-# Local development DB
 development:
   <<: *default
-  database: <%= ENV.fetch("DEV_DB_NAME") %>
-  username: <%= ENV.fetch("DEV_DB_USER") %>
-  password: <%= ENV.fetch("DEV_DB_PASSWORD") %>
-  host: <%= ENV.fetch("DEV_DB_HOST") %>
+  database: blog_app_dev
 
-# Local test DB
 test:
   <<: *default
-  database: <%= ENV.fetch("TEST_DB_NAME") %>
-  username: <%= ENV.fetch("TEST_DB_USER") %>
-  password: <%= ENV.fetch("TEST_DB_PASSWORD") %>
-  host: <%= ENV.fetch("TEST_DB_HOST") %>
+  database: blog_app_test
 
-# Railway production DB
 production:
   <<: *default
-  url: <%= ENV.fetch("DATABASE_URL") %>
+  database: blog_app_prod
+  username: <%= ENV["POSTGRES_USER"] %>
+  password: <%= ENV["POSTGRES_PASSWORD"] %>
+  host: <%= ENV["POSTGRES_HOST"] %>
+  port: <%= ENV["POSTGRES_PORT"] || 5432 %>

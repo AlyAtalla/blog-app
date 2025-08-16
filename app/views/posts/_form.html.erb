@@ -1,0 +1,11 @@
+<%= form_with model: post, class: "space-y-4" do |f| %>
+  <div>
+    <%= f.label :title, class: "block font-semibold mb-1" %>
+    <%= f.text_field :title, class: "w-full border rounded px-3 py-2" %>
+  </div>
+  <div>
+    <%= f.label :body, class: "block font-semibold mb-1" %>
+    <%= f.text_area :body, rows: 6, class: "w-full border rounded px-3 py-2" %>
+  </div>
+  <%= f.submit class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+<% end %>

@@ -1,43 +1,19 @@
-<div class="post" >
-  <h3><%= @post.title %> by <%= @post.author.name %></h3>
-  <p><%= @post.text %></p>
-  <p class="counter">
-    Comments: <%= @post.comments_counter.to_i %>, Likes: <%= @post.likes_counter.to_i %>
-  </p>
-  <% if can? :destroy, @post %>
-  <%= form_with model: @post, url: user_post_path(@post.author, @post), method: :delete do |f| %>
-    <%= f.submit "Delete Post" %>
+<div class="bg-white p-6 rounded-lg shadow">
+  <h1 class="text-3xl font-bold mb-4"><%= @post.title %></h1>
+  <p class="mb-4 text-gray-800"><%= @post.body %></p>
+  <p class="text-sm text-gray-500 mb-6">By <%= @post.user.email %>, <%= @post.created_at.strftime("%B %d, %Y") %></p>
+
+  <% if @post.user == current_user %>
+    <div class="mb-6">
+      <%= link_to "Edit", edit_post_path(@post), class: "bg-yellow-400 px-4 py-2 rounded hover:bg-yellow-500 mr-3" %>
+      <%= link_to "Delete", @post, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" %>
+    </div>
   <% end %>
-<% end %>
+
+  <!-- Comments -->
+  <h2 class="text-2xl font-bold mb-4">Comments</h2>
+  <%= render @post.comments %>
+
+  <h3 class="text-xl font-semibold mt-6 mb-2">Add a Comment</h3>
+  <%= render "comments/form", post: @post, comment: @comment %>
 </div>
-<% like = Like.find_by(post_id: @post.id, author_id: current_user.id) %>
-<% if can? :create, Like %>
-  <% if like.nil? %>
-    <%= render partial: "likes/like_action", locals: { post: @post } %>
-  <% else %>
-    <%= render partial: "likes/unlike_action", locals: { post: @post, like: like } %>
-  <% end %>
-<% end %>
-<% flash.each do |name, msg| -%>
-  <%= content_tag :div, msg, class: name %>
-<% end -%>
-<ul class="comments_container">
-  <h3>Comments:</h3>
-  <% @post.comments.each do |comment| %>
-    <li class="comment">
-      <div>
-        <span><%= comment.author.name %></span>:
-        <span><%= comment.text %></span>
-      </div>
-    <% if can? :destroy, comment %>
-      <%= link_to 'delete', user_post_comment_path(comment.post.author, comment.post, comment), data: {
-        turbo_method: :delete,
-        turbo_confirm: 'Are you sure!'
-      }, class: '' if can?(:destroy, comment) %>
-    <% end %>
-  </li>
-  <% end %>
-</ul>
-<% if can? :create, Comment %>
-  <%= link_to 'New Comment', new_user_post_comment_path(@post.author, @post) %>
-<% end %>

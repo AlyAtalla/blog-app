@@ -2,20 +2,47 @@
 <html>
   <head>
     <title>BlogApp</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <body>
-    <div id="welcome">
-      <h1>Welcome to Blog App</h1>
-      <p class="notice"><%= notice %></p>
-      <p class="alert"><%= alert %></p>
-      <%= yield %>
+  <body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
+      <%= link_to "BlogApp", root_path, class: "font-bold text-xl" %>
+      <div>
+        <% if user_signed_in? %>
+          <%= link_to "New Post", new_post_path, class: "bg-white text-blue-600 px-4 py-2 rounded mr-3 hover:bg-gray-200" %>
+          <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "bg-red-500 px-4 py-2 rounded hover:bg-red-600" %>
+        <% else %>
+          <%= link_to "Sign Up", new_user_registration_path, class: "bg-green-500 px-4 py-2 rounded mr-3 hover:bg-green-600" %>
+          <%= link_to "Login", new_user_session_path, class: "bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-200" %>
+        <% end %>
+      </div>
+    </nav>
+
+    <!-- Flash messages -->
+    <div class="container mx-auto mt-4">
+      <% flash.each do |type, msg| %>
+        <div class="mb-4 p-4 rounded
+                    <%= type == 'notice' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %>">
+          <%= msg %>
+        </div>
+      <% end %>
     </div>
+
+    <!-- Main content -->
+    <main class="flex-1 container mx-auto p-6">
+      <%= yield %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-200 text-center py-4 mt-6">
+      <p>&copy; <%= Date.today.year %> BlogApp</p>
+    </footer>
   </body>
 </html>

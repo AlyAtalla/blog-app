@@ -1,51 +1,56 @@
 class PostsController < ApplicationController
-  load_and_authorize_resource
-  layout 'standard'
+  before_action :authenticate_user!, except: [:index, :show]
+  before_action :set_post, only: [:show, :edit, :update, :destroy]
+  before_action :authorize_owner!, only: [:edit, :update, :destroy]
+
   def index
-    @user = User.find(params[:user_id])
-    @posts = Post.where(author_id: params[:user_id]).order(id: :asc)
-    @posts = @posts.paginate(page: params[:page], per_page: 5)
+    @posts = Post.includes(:user).order(created_at: :desc)
   end
 
   def show
-    @user = User.find(params[:user_id])
-    @post = Post.includes(:author, :comments, :likes).find_by(author_id: @user.id, id: params[:id])
-    if @post
-      @comment = Comment.new
-      @like = Like.new
-    else
-      flash[:alert] = 'Post not found!'
-      redirect_to user_post_path(@user, params[:id])
-    end
+    @comment = Comment.new
+    @comments = @post.comments.includes(:user).order(created_at: :asc)
   end
 
   def new
-    @post = Post.new
+    @post = current_user.posts.build
   end
 
   def create
-    @post = Post.new(post_params)
-    @post.author = current_user
+    @post = current_user.posts.build(post_params)
     if @post.save
-      flash[:success] = 'Post created successfully!'
-      redirect_to user_posts_url
+      redirect_to @post, notice: "Post created successfully."
     else
-      flash.now[:error] = 'Error: Post could not be created!'
-      render :new, locals: { post: @post }
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit; end
+
+  def update
+    if @post.update(post_params)
+      redirect_to @post, notice: "Post updated successfully."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @post = Post.find(params[:id])
-    @post.author.decrement!(:posts_counter)
-    @post.destroy!
-    flash[:success] = 'Post was deleted successfully!'
-    redirect_to user_posts_url
+    @post.destroy
+    redirect_to root_path, notice: "Post deleted."
   end
 
   private
 
+  def set_post
+    @post = Post.find(params[:id])
+  end
+
+  def authorize_owner!
+    redirect_to @post, alert: "Not authorized." unless @post.user == current_user
+  end
+
   def post_params
-    params.require(:post).permit(:title, :text)
+    params.require(:post).permit(:title, :body)
   end
 end

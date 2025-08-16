@@ -1,0 +1,7 @@
+<div class="border-b py-3">
+  <p class="text-gray-800"><%= comment.body %></p>
+  <p class="text-sm text-gray-500">By <%= comment.user.email %> • <%= time_ago_in_words(comment.created_at) %> ago</p>
+  <% if comment.user == current_user %>
+    <%= link_to "Delete", [comment.post, comment], data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "text-red-500 hover:underline text-sm" %>
+  <% end %>
+</div>

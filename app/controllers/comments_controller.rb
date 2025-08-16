@@ -1,40 +1,33 @@
 class CommentsController < ApplicationController
-  load_and_authorize_resource
-  def index
-    @user = User.find(params[:user_id])
-    @post = @user.posts.find(params[:post_id])
-    @comments = @post.comments
-    respond_to do |format|
-      format.html
-      format.json { render json: @comments }
-    end
-  end
+  before_action :authenticate_user!
+  before_action :set_post
 
   def create
-    post = Post.find(params[:post_id])
-    @comment = post.comments.new(author: current_user, **comment_params)
+    @comment = @post.comments.build(comment_params.merge(user: current_user))
     if @comment.save
-      flash[:notice] = 'Comment created successfully!'
-      redirect_to user_post_path(post.author, post)
+      redirect_to @post, notice: "Comment added."
     else
-      flash[:alert] = 'Comment was not created!'
+      redirect_to @post, alert: @comment.errors.full_messages.to_sentence
     end
   end
 
   def destroy
-    @comment = Comment.find(params[:id])
-    post = @comment.post
-    if @comment.destroy
-      flash[:notice] = 'Comment deleted successfully!'
+    @comment = @post.comments.find(params[:id])
+    if @comment.user == current_user || @post.user == current_user
+      @comment.destroy
+      redirect_to @post, notice: "Comment deleted."
     else
-      flash[:alert] = 'Error deleting the comment!'
+      redirect_to @post, alert: "Not authorized."
     end
-    redirect_to user_post_path(post.author, post), status: :see_other
   end
 
   private
 
+  def set_post
+    @post = Post.find(params[:post_id])
+  end
+
   def comment_params
-    params.require(:comment).permit(:text)
+    params.require(:comment).permit(:body)
   end
 end
