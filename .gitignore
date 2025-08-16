@@ -52,3 +52,11 @@
 !/app/assets/builds/.keep
 
 /node_modules
+node_modules/.bin/autoprefixer
+node_modules/.bin/browserslist
+node_modules/.bin/nanoid
+node_modules/.bin/update-browserslist-db
+node_modules/.bin/autoprefixer
+node_modules/.bin/browserslist
+node_modules/.bin/nanoid
+node_modules/.bin/update-browserslist-db
