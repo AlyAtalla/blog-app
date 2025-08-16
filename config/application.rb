@@ -23,8 +23,15 @@ module BlogApp
       config.before_initialize do
         ActiveRecord::Base.establish_connection = -> { } # no-op
       end
+      config.active_record.migration_error = false
+      config.active_record.dump_schema_after_migration = false
+      config.active_record.database_selector = nil
+      config.active_record.database_resolver = nil
+      config.active_record.database_resolver_context = nil
+      config.active_record.maintain_test_schema = false
+      config.active_record.schema_format = :ruby
+      config.active_record.sqlite3.represent_boolean_as_integer = true if defined?(ActiveRecord::ConnectionAdapters::SQLite3Adapter)
     end
-
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

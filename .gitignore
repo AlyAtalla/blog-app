@@ -60,3 +60,4 @@ node_modules/.bin/autoprefixer
 node_modules/.bin/browserslist
 node_modules/.bin/nanoid
 node_modules/.bin/update-browserslist-db
+config/credentials.yml.enc
