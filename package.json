@@ -8,7 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify"
   },
   "repository": {
     "type": "git",
@@ -22,7 +23,8 @@
   },
   "homepage": "https://github.com/AlyAtalla/blog-app#readme",
   "dependencies": {
-    "@hotwired/stimulus": "^3.2.2"
+    "@hotwired/stimulus": "^3.2.2",
+    "@tailwindcss/cli": "^4.1.12"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",

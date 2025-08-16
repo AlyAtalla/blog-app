@@ -13,7 +13,8 @@ gem "bootsnap", require: false
 # Frontend
 gem "turbo-rails"
 gem "stimulus-rails"
-gem "tailwindcss-rails"
+gem "cssbundling-rails"
+
 
 # Auth
 gem "devise"
