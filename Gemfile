@@ -16,6 +16,7 @@ gem "stimulus-rails"
 gem "cssbundling-rails"
 gem "importmap-rails"
 
+gem 'dotenv-rails', groups: [:development, :test]
 
 # Auth
 gem "devise"

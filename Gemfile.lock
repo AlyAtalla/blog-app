@@ -99,6 +99,10 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
+    dotenv (3.1.8)
+    dotenv-rails (3.1.8)
+      dotenv (= 3.1.8)
+      railties (>= 6.1)
     drb (2.2.3)
     erb (5.0.2)
     erubi (1.12.0)
@@ -249,6 +253,7 @@ DEPENDENCIES
   bootsnap
   cssbundling-rails
   devise
+  dotenv-rails
   importmap-rails
   listen
   pg (~> 1.5)

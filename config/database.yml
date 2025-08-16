@@ -6,10 +6,10 @@ default: &default
 # Local development DB
 development:
   <<: *default
-  database: <%= ENV.fetch("DEV_DB_NAME") %>
-  username: <%= ENV.fetch("DEV_DB_USER") %>
-  password: <%= ENV.fetch("DEV_DB_PASSWORD") %>
-  host: <%= ENV.fetch("DEV_DB_HOST") %>
+  database: <%= ENV.fetch("DEV_DB_NAME", "bolg_app_development") %>
+  username: <%= ENV.fetch("DEV_DB_USER", "postgres") %>
+  password: <%= ENV.fetch("DEV_DB_PASSWORD", "") %>
+  host: <%= ENV.fetch("DEV_DB_HOST", "localhost") %>
 
 # Local test DB
 test:
