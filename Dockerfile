@@ -1,13 +1,11 @@
 # syntax = docker/dockerfile:1
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.2.2
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
 
-# Rails app lives here
 WORKDIR /rails
 
-# Set production environment
+# Set production environment defaults
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
@@ -18,35 +16,35 @@ ENV RAILS_ENV="production" \
 # -------------------------
 FROM base as build
 
-# Install packages needed to build gems
+# Install build dependencies
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config && \
     rm -rf /var/lib/apt/lists/*
 
-# Install application gems
+# Install gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
-# Copy application code
+# Copy app code
 COPY . .
 
 # Precompile bootsnap code
 RUN bundle exec bootsnap precompile app/ lib/
 
-# Make bin files executable
+# Fix bin files
 RUN chmod +x bin/* && \
     sed -i "s/\r$//g" bin/* && \
     sed -i 's/ruby\.exe$/ruby/' bin/*
 
-# Precompile assets with a temporary secret key
+# Precompile assets using a temporary secret key
 ARG SECRET_KEY_BASE
 ENV SECRET_KEY_BASE=${SECRET_KEY_BASE}
 RUN ./bin/rails assets:precompile
 
 # -------------------------
-# Final runtime stage
+# Runtime stage
 # -------------------------
 FROM base
 
@@ -68,6 +66,6 @@ USER rails:rails
 # Entrypoint
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server by default
+# Default server command
 EXPOSE 3000
-CMD ["./bin/rails", "server"]
+CMD ["./bin/rails", "server"]()
