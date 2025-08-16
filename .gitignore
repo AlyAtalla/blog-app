@@ -63,3 +63,4 @@ node_modules/.bin/update-browserslist-db
 config/credentials.yml.enc
 
 /config/master.key
+config/credentials.yml.enc
