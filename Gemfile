@@ -14,6 +14,7 @@ gem "bootsnap", require: false
 gem "turbo-rails"
 gem "stimulus-rails"
 gem "cssbundling-rails"
+gem "importmap-rails"
 
 
 # Auth
