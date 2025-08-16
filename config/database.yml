@@ -1,7 +1,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  host: <%= ENV.fetch("DEV_DB_HOST", "localhost") %>
+  host: <%= ENV.fetch("DEV_DB_HOST", "localhost") %>  # Force TCP/IP
   username: <%= ENV.fetch("DEV_DB_USER", "postgres") %>
   password: <%= ENV.fetch("DEV_DB_PASSWORD", "0120852868") %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
