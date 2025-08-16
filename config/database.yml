@@ -1,19 +1,25 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  host: <%= ENV.fetch("DEV_DB_HOST", "localhost") %>
-  username: <%= ENV.fetch("DEV_DB_USER", "postgres") %>
-  password: <%= ENV.fetch("DEV_DB_PASSWORD", "0120852868") %>
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
   <<: *default
-  database: <%= ENV.fetch("DEV_DB_NAME", "blog_app_development") %>
+  database: bolg_app_development
+  username: postgres
+  password: 0120852868
+  host: localhost
 
 test:
   <<: *default
-  database: <%= ENV.fetch("TEST_DB_NAME", "blog_app_test") %>
+  database: bolg_app_test
+  username: postgres
+  password: 0120852868
+  host: localhost
 
 production:
   <<: *default
-  database: <%= ENV["DATABASE_URL"] || "railway" %>  # fallback if DATABASE_URL missing
+  database: bolg_app_production
+  username: postgres
+  password: 0120852868
+  host: localhost
