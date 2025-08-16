@@ -1,48 +1,48 @@
-# --------------------- Base Stage ---------------------
-FROM ruby:3.2.2-slim AS base
+# syntax = docker/dockerfile:1
 
-# Install dependencies
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs yarn nano
+ARG RUBY_VERSION=3.2.2
+FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
 
-# Set working directory
-WORKDIR /app
+WORKDIR /rails
 
-# Copy Gemfile and install gems
+ENV RAILS_ENV=production \
+    BUNDLE_DEPLOYMENT=1 \
+    BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_WITHOUT=development:test \
+    RAILS_SERVE_STATIC_FILES=true \
+    RAILS_LOG_TO_STDOUT=true
+
+# --- Build stage ---
+FROM base as build
+
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y build-essential git libvips pkg-config libpq-dev nodejs yarn
+
 COPY Gemfile Gemfile.lock ./
-RUN gem install bundler -v 2.4.22
 RUN bundle install --jobs 4 --retry 3
 
-# --------------------- Build Stage ---------------------
-FROM base AS build
-
-# Copy app source code
 COPY . .
 
-# Set environment variables
-ENV RAILS_ENV=production
-ENV RAILS_MASTER_KEY=b6bfc969607086e3551703dfe80cc392
-ENV DATABASE_URL=postgresql://postgres:0120852868@localhost/bolg_app_production
+RUN SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bundle exec rails assets:precompile
 
-# Precompile assets
-RUN bundle exec rails assets:precompile
+# --- Final image ---
+FROM base
 
-# --------------------- Final Stage ---------------------
-FROM ruby:3.2.2-slim AS final
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl libsqlite3-0 libvips nodejs yarn && \
+    rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
-
-# Copy gems and app from build
 COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build /app /app
+COPY --from=build /rails /rails
 
-# Set environment variables
-ENV RAILS_ENV=production
-ENV RAILS_MASTER_KEY=b6bfc969607086e3551703dfe80cc392
-ENV RAILS_LOG_TO_STDOUT=true
-ENV DATABASE_URL=postgresql://postgres:0120852868@localhost/bolg_app_production
+RUN useradd rails --create-home --shell /bin/bash && \
+    chown -R rails:rails db log storage tmp
 
-# Expose port
-EXPOSE 3000
+USER rails:rails
 
-# Start Puma server
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+EXPOSE 8080
+
+ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+
+# Use the old start command (Rails default server)
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "${PORT:-8080}"]
