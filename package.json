@@ -1,0 +1,27 @@
+{
+  "name": "bolg-app",
+  "version": "1.0.0",
+  "description": "- [📖 About the Project](#about-project)\r     - [Tech Stack](#tech-stack)\r     - [Key Features](#key-features)\r - [💻 Getting Started](#getting-started)\r - [👥 Authors](#authors)\r - [🔭 Future Features](#future-features)\r - [🤝 Contributing](#contributing)\r - [⭐️ Show your support](#support)\r - [🙏 Acknowledgements](#acknowledgements)\r - [📝 License](#license)\r <!-- PROJECT DESCRIPTION -->",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlyAtalla/blog-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlyAtalla/blog-app/issues"
+  },
+  "homepage": "https://github.com/AlyAtalla/blog-app#readme",
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2"
+  }
+}
