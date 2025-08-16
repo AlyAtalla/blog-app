@@ -16,6 +16,15 @@ module BlogApp
       config.autoload_paths << directory unless %w(assets tasks).include?(File.basename(directory))
     end
 
+    # ----------------------------
+    # Skip database initialization when precompiling assets
+    # ----------------------------
+    if ENV['RAILS_SKIP_DATABASE'] == 'true'
+      config.before_initialize do
+        ActiveRecord::Base.establish_connection = -> { } # no-op
+      end
+    end
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
