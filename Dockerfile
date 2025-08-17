@@ -57,9 +57,12 @@ ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
     LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
 # Build assets (with error handling)
-RUN npm run build:css || echo "CSS build might have warnings but continuing..."
-RUN RAILS_ENV=production bundle exec rails assets:precompile || (echo "Asset precompilation failed!" && exit 1)
+# Install node modules and build CSS first
+RUN npm install --legacy-peer-deps
+RUN npm run build:css
 
+# Then precompile assets with debug output
+RUN RAILS_ENV=production bundle exec rails assets:precompile 2>&1 | tee /tmp/assets.log || (cat /tmp/assets.log && exit 1)
 # --- Final image ---
 FROM base
 
