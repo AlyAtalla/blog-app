@@ -1,34 +1,23 @@
 {
   "name": "bolg-app",
+  "private": true,
   "version": "1.0.0",
-  "description": "- [📖 About the Project](#about-project)\r     - [Tech Stack](#tech-stack)\r     - [Key Features](#key-features)\r - [💻 Getting Started](#getting-started)\r - [👥 Authors](#authors)\r - [🔭 Future Features](#future-features)\r - [🤝 Contributing](#contributing)\r - [⭐️ Show your support](#support)\r - [🙏 Acknowledgements](#acknowledgements)\r - [📝 License](#license)\r <!-- PROJECT DESCRIPTION -->",
-  "main": "index.js",
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
+  "description": "Your project description",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build:css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify"
+    "build:css": "tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
+    "build": "npm run build:css",
+    "watch:css": "tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --watch"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AlyAtalla/blog-app.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/AlyAtalla/blog-app/issues"
-  },
-  "homepage": "https://github.com/AlyAtalla/blog-app#readme",
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
-    "@tailwindcss/cli": "^4.1.12"
-  },
-  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.9",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.12"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }

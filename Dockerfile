@@ -10,12 +10,13 @@ ENV RAILS_ENV=production \
     BUNDLE_PATH=/usr/local/bundle \
     BUNDLE_WITHOUT=development:test \
     RAILS_SERVE_STATIC_FILES=true \
-    RAILS_LOG_TO_STDOUT=true
+    RAILS_LOG_TO_STDOUT=true \
+    NODE_ENV=production
 
 # --- Build stage ---
 FROM base as build
 
-# Install build dependencies (added libjemalloc2 for memory optimization)
+# Install build dependencies including Tailwind requirements
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     build-essential \
@@ -25,75 +26,63 @@ RUN apt-get update -qq && \
     libpq-dev \
     nodejs \
     npm \
-    yarn \
     python3 \
     python3-pip \
-    libjemalloc2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install gems (with frozen lockfile verification)
+# Install Yarn
+RUN npm install -g yarn
+
+# Install gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle config set force_ruby_platform true && \
+RUN bundle lock --add-platform ruby && \
+    bundle config set force_ruby_platform true && \
     bundle install --jobs $(nproc) --retry 3
 
-# Install node modules (clean cache after)
+# Install Node modules including Tailwind
 COPY package.json package-lock.json ./
-RUN npm install --legacy-peer-deps && \
-    npm cache clean --force
+RUN npm install --legacy-peer-deps
+RUN npm install -D tailwindcss postcss autoprefixer
 
-# Copy application code (with .dockerignore support)
+# Copy application code
 COPY . .
 
 # Build arguments for secrets
 ARG RAILS_MASTER_KEY
 ARG SECRET_KEY_BASE
 
-# Set environment variables (added DATABASE_URL for Railway)
+# Set environment variables
 ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
     SECRET_KEY_BASE=${SECRET_KEY_BASE} \
-    RAILS_SKIP_DATABASE=true \
-    DATABASE_URL=${DATABASE_URL} \
-    MALLOC_ARENA_MAX=2 \
-    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
+    RAILS_SKIP_DATABASE=true
 
-# Build assets (with error handling)
-# Install node modules and build CSS first
-RUN npm install --legacy-peer-deps
+# Build CSS with Tailwind
 RUN npm run build:css
-
-# Then precompile assets with debug output
+# Precompile assets with debug output
 RUN RAILS_ENV=production bundle exec rails assets:precompile 2>&1 | tee /tmp/assets.log || (cat /tmp/assets.log && exit 1)
+
 # --- Final image ---
 FROM base
 
-# Install runtime dependencies (added postgres client for Railway)
+# Install runtime dependencies
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     curl \
     libsqlite3-0 \
     libvips \
-    libjemalloc2 \
     nodejs \
-    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy artifacts from build stage (explicitly copy public assets)
+# Copy artifacts from build stage
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
-COPY --from=build /rails/public/assets /rails/public/assets
-COPY --from=build /rails/public/packs /rails/public/packs
 
-# Setup application user and permissions (better permission handling)
+# Setup application user and permissions
 RUN useradd rails --create-home --shell /bin/bash && \
-    mkdir -p /rails/tmp/pids && \
-    chown -R rails:rails /rails && \
+    chown -R rails:rails db log storage tmp && \
     chmod +x /rails/bin/docker-entrypoint
 
 USER rails:rails
-
-# Health check for Railway
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8080}/up || exit 1
 
 EXPOSE ${PORT:-8080}
 
