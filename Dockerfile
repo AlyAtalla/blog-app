@@ -1,17 +1,3 @@
-# syntax = docker/dockerfile:1
-
-ARG RUBY_VERSION=3.2.2
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
-
-WORKDIR /rails
-
-ENV RAILS_ENV=production \
-    BUNDLE_DEPLOYMENT=1 \
-    BUNDLE_PATH=/usr/local/bundle \
-    BUNDLE_WITHOUT=development:test \
-    RAILS_SERVE_STATIC_FILES=true \
-    RAILS_LOG_TO_STDOUT=true
-
 # --- Build stage ---
 FROM base as build
 
@@ -32,8 +18,11 @@ ENV RAILS_MASTER_KEY=b6bfc969607086e3551703dfe80cc392
 ENV SECRET_KEY_BASE=fa9e012cc6a5e32ac663547873d66986c9a22a5e2b6cead93777921c9ee9ed46330beedda43cedceae1e5d2ea9576cb135a9b35a899bd8e4824d922cf41586b
 ENV RAILS_SKIP_DATABASE=true
 
-# Build Tailwind CSS or other npm assets
 RUN npm run build:css
+
+# Precompile Rails assets safely (skip database & reduce memory load)
+RUN RAILS_ENV=production RAILS_GROUPS=assets bundle exec rails assets:precompile
+
 
 # Precompile Rails assets
 RUN bundle exec rails assets:precompile
