@@ -16,7 +16,7 @@ ENV RAILS_ENV=production \
 FROM base as build
 
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libvips pkg-config libpq-dev nodejs
+    apt-get install --no-install-recommends -y build-essential git libvips pkg-config libpq-dev nodejs npm
 
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --jobs 4 --retry 3
