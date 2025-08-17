@@ -16,7 +16,7 @@ ENV RAILS_ENV=production \
 # --- Build stage ---
 FROM base as build
 
-# Install build dependencies including Tailwind requirements
+# 1. Install Node.js properly using NodeSource
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     build-essential \
@@ -24,27 +24,24 @@ RUN apt-get update -qq && \
     libvips \
     pkg-config \
     libpq-dev \
-    nodejs \
-    npm \
+    curl \
     python3 \
     python3-pip \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g yarn \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Yarn
-RUN npm install -g yarn
-
-# Install gems
+# 2. Install gems first
 COPY Gemfile Gemfile.lock ./
-RUN bundle lock --add-platform ruby && \
-    bundle config set force_ruby_platform true && \
-    bundle install --jobs $(nproc) --retry 3
+RUN bundle install --jobs $(nproc) --retry 3
 
-# Install Node modules including Tailwind
+# 3. Install Node modules including Tailwind
 COPY package.json package-lock.json ./
 RUN npm install --legacy-peer-deps
-RUN npm install -D tailwindcss postcss autoprefixer
+RUN npm install -D tailwindcss postcss autoprefixer @tailwindcss/forms @tailwindcss/typography
 
-# Copy application code
+# 4. Copy application code
 COPY . .
 
 # Build arguments for secrets
@@ -56,9 +53,10 @@ ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
     SECRET_KEY_BASE=${SECRET_KEY_BASE} \
     RAILS_SKIP_DATABASE=true
 
-# Build CSS with Tailwind
-RUN npm install --legacy-peer-deps
-RUN npm run build:css
+# 5. Build CSS using direct Tailwind CLI path
+RUN ./node_modules/.bin/tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify
+
+# 6. Precompile assets
 RUN RAILS_ENV=production bundle exec rails assets:precompile
 
 # --- Final image ---
@@ -70,7 +68,6 @@ RUN apt-get update -qq && \
     curl \
     libsqlite3-0 \
     libvips \
-    nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy artifacts from build stage
