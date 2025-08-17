@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ARG RUBY_VERSION=3.2.2
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
+FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
 
 WORKDIR /rails
 
@@ -14,7 +14,7 @@ ENV RAILS_ENV=production \
     NODE_ENV=production
 
 # --- Build stage ---
-FROM base AS build
+FROM base as build
 
 # 1. Install system dependencies + Node.js
 RUN apt-get update -qq && \
@@ -24,49 +24,51 @@ RUN apt-get update -qq && \
     apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
 
-
-# 2. Copy and install Ruby gems
+# 2. Install gems first
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --jobs $(nproc) --retry 3
 
-# 3. Copy Node package files and install dependencies
+# 3. Install Node modules including Tailwind
 COPY package.json package-lock.json ./
 RUN npm install --legacy-peer-deps
 RUN npm install -D tailwindcss postcss autoprefixer @tailwindcss/forms @tailwindcss/typography
 
+# Verify Tailwind installation
+RUN ls -la node_modules/.bin/tailwindcss || echo "Tailwind CLI not found!"
+
 # 4. Copy application code
 COPY . .
 
-# 5. Ensure builds folder exists
-RUN mkdir -p ./app/assets/builds
-
-# 6. Set secrets (build args)
+# Build arguments for secrets
 ARG RAILS_MASTER_KEY
 ARG SECRET_KEY_BASE
+
+# Set environment variables
 ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
     SECRET_KEY_BASE=${SECRET_KEY_BASE} \
     RAILS_SKIP_DATABASE=true
 
-# 7. Build Tailwind CSS
+# 5. Build CSS
 RUN npx tailwindcss -i ./app/assets/stylesheets/application.tailwind.css \
     -o ./app/assets/builds/application.css --minify
 
-# 8. Precompile Rails assets
-RUN RAILS_ENV=production bundle exec rails assets:precompile
+# 6. Precompile Rails assets
+RUN bundle exec rails assets:precompile
 
-# --- Final stage ---
+# --- Final image ---
 FROM base
 
-# 9. Install runtime dependencies
+# Install runtime dependencies
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libsqlite3-0 libvips && \
+    apt-get install --no-install-recommends -y \
+      curl libsqlite3-0 libvips && \
     rm -rf /var/lib/apt/lists/*
 
-# 10. Copy artifacts from build stage
+# Copy artifacts from build stage
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
-# 11. Setup user and permissions
+# Setup application user and permissions
 RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp && \
     chmod +x /rails/bin/docker-entrypoint
