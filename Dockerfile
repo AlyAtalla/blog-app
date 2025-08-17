@@ -23,7 +23,11 @@ RUN bundle install --jobs 4 --retry 3
 
 COPY . .
 
-RUN SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bundle exec rails assets:precompile
+ARG RAILS_MASTER_KEY
+ENV RAILS_MASTER_KEY=b6bfc969607086e3551703dfe80cc392
+ENV SECRET_KEY_BASE=fa9e012cc6a5e32ac663547873d66986c9a22a5e2b6cead93777921c9ee9ed46330beedda43cedceae1e5d2ea9576cb135a9b35a899bd8e4824d922cf41586b
+ENV RAILS_SKIP_DATABASE=true
+RUN npm run build:css
 
 # --- Final image ---
 FROM base
