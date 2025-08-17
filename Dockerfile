@@ -21,6 +21,9 @@ RUN apt-get update -qq && \
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --jobs 4 --retry 3
 
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+
 COPY . .
 
 ARG RAILS_MASTER_KEY

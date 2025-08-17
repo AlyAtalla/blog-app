@@ -40,7 +40,7 @@
 /storage/*
 /public/assets/*
 /public/packs/*
-
+node_modules/
 # Credentials & env
 /.env
 /config/master.key
