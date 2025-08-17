@@ -19,10 +19,11 @@ FROM base AS build
 # 1. Install system dependencies + Node.js
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
-    build-essential git libvips pkg-config libpq-dev curl && \
+      build-essential git libvips pkg-config libpq-dev curl && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs npm && \
+    apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
+
 
 # 2. Copy and install Ruby gems
 COPY Gemfile Gemfile.lock ./
