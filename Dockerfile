@@ -57,9 +57,9 @@ ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
     RAILS_SKIP_DATABASE=true
 
 # Build CSS with Tailwind
+RUN npm install --legacy-peer-deps
 RUN npm run build:css
-# Precompile assets with debug output
-RUN RAILS_ENV=production bundle exec rails assets:precompile 2>&1 | tee /tmp/assets.log || (cat /tmp/assets.log && exit 1)
+RUN RAILS_ENV=production bundle exec rails assets:precompile
 
 # --- Final image ---
 FROM base
