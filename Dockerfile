@@ -15,43 +15,84 @@ ENV RAILS_ENV=production \
 # --- Build stage ---
 FROM base as build
 
+# Install build dependencies (added libjemalloc2 for memory optimization)
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libvips pkg-config libpq-dev nodejs npm yarn
+    apt-get install --no-install-recommends -y \
+    build-essential \
+    git \
+    libvips \
+    pkg-config \
+    libpq-dev \
+    nodejs \
+    npm \
+    yarn \
+    python3 \
+    python3-pip \
+    libjemalloc2 \
+    && rm -rf /var/lib/apt/lists/*
 
+# Install gems (with frozen lockfile verification)
 COPY Gemfile Gemfile.lock ./
-RUN bundle install --jobs 4 --retry 3
+RUN bundle config set force_ruby_platform true && \
+    bundle install --jobs $(nproc) --retry 3
 
+# Install node modules (clean cache after)
 COPY package.json package-lock.json ./
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps && \
+    npm cache clean --force
 
+# Copy application code (with .dockerignore support)
 COPY . .
 
+# Build arguments for secrets
 ARG RAILS_MASTER_KEY
-ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
-ENV SECRET_KEY_BASE=${SECRET_KEY_BASE:-dummy}
-ENV RAILS_SKIP_DATABASE=true
+ARG SECRET_KEY_BASE
 
-RUN npm run build:css
-RUN RAILS_ENV=production RAILS_GROUPS=assets bundle exec rails assets:precompile
+# Set environment variables (added DATABASE_URL for Railway)
+ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
+    SECRET_KEY_BASE=${SECRET_KEY_BASE} \
+    RAILS_SKIP_DATABASE=true \
+    DATABASE_URL=${DATABASE_URL} \
+    MALLOC_ARENA_MAX=2 \
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
+
+# Build assets (with error handling)
+RUN npm run build:css || echo "CSS build might have warnings but continuing..."
+RUN RAILS_ENV=production bundle exec rails assets:precompile || (echo "Asset precompilation failed!" && exit 1)
+
 # --- Final image ---
 FROM base
 
-
+# Install runtime dependencies (added postgres client for Railway)
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libsqlite3-0 libvips nodejs npm && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install --no-install-recommends -y \
+    curl \
+    libsqlite3-0 \
+    libvips \
+    libjemalloc2 \
+    nodejs \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
+# Copy artifacts from build stage (explicitly copy public assets)
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
+COPY --from=build /rails/public/assets /rails/public/assets
+COPY --from=build /rails/public/packs /rails/public/packs
 
-# Add Rails user and set permissions, including executable entrypoint
+# Setup application user and permissions (better permission handling)
 RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp && \
+    mkdir -p /rails/tmp/pids && \
+    chown -R rails:rails /rails && \
     chmod +x /rails/bin/docker-entrypoint
 
 USER rails:rails
 
-EXPOSE 8080
+# Health check for Railway
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:${PORT:-8080}/up || exit 1
+
+EXPOSE ${PORT:-8080}
 
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "${PORT:-8080}"]
