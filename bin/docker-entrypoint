@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+# Ensure this script is executable
+chmod +x "$0"
+
 # Prepare the database only when starting Rails server
 if [ "$1" == "./bin/rails" ] && [ "$2" == "server" ]; then
   ./bin/rails db:prepare
