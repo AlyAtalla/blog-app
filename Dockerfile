@@ -16,7 +16,7 @@ ENV RAILS_ENV=production \
 # --- Build stage ---
 FROM base as build
 
-# 1. Install Node.js properly using NodeSource
+# 1. Install system dependencies with Node.js from Nodesource
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     build-essential \
@@ -25,8 +25,6 @@ RUN apt-get update -qq && \
     pkg-config \
     libpq-dev \
     curl \
-    python3 \
-    python3-pip \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g yarn \
@@ -41,6 +39,9 @@ COPY package.json package-lock.json ./
 RUN npm install --legacy-peer-deps
 RUN npm install -D tailwindcss postcss autoprefixer @tailwindcss/forms @tailwindcss/typography
 
+# Verify Tailwind installation
+RUN ls -la node_modules/.bin/tailwindcss || echo "Tailwind CLI not found!"
+
 # 4. Copy application code
 COPY . .
 
@@ -53,8 +54,8 @@ ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
     SECRET_KEY_BASE=${SECRET_KEY_BASE} \
     RAILS_SKIP_DATABASE=true
 
-# 5. Build CSS using direct Tailwind CLI path
-RUN ./node_modules/.bin/tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify
+# 5. Build CSS using npm script
+RUN npm run build:css
 
 # 6. Precompile assets
 RUN RAILS_ENV=production bundle exec rails assets:precompile
