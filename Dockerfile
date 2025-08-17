@@ -16,13 +16,13 @@ ENV RAILS_ENV=production \
 FROM base as build
 
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libvips pkg-config libpq-dev nodejs yarn
+    apt-get install --no-install-recommends -y build-essential git libvips pkg-config libpq-dev nodejs
 
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --jobs 4 --retry 3
 
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm install --production --legacy-peer-deps
 
 COPY . .
 
@@ -30,13 +30,13 @@ ARG RAILS_MASTER_KEY
 ENV RAILS_MASTER_KEY=b6bfc969607086e3551703dfe80cc392
 ENV SECRET_KEY_BASE=fa9e012cc6a5e32ac663547873d66986c9a22a5e2b6cead93777921c9ee9ed46330beedda43cedceae1e5d2ea9576cb135a9b35a899bd8e4824d922cf41586b
 ENV RAILS_SKIP_DATABASE=true
-RUN npx tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify
+RUN npm run build:css
 
 # --- Final image ---
 FROM base
 
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libsqlite3-0 libvips nodejs yarn && \
+    apt-get install --no-install-recommends -y curl libsqlite3-0 libvips nodejs && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /usr/local/bundle /usr/local/bundle
