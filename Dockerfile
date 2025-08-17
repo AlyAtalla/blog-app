@@ -47,6 +47,8 @@ RUN useradd rails --create-home --shell /bin/bash && \
 
 USER rails:rails
 
+RUN chmod +x bin/* /rails/bin/docker-entrypoint
+
 EXPOSE 8080
 
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
