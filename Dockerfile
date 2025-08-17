@@ -16,48 +16,39 @@ ENV RAILS_ENV=production \
 # --- Build stage ---
 FROM base as build
 
-# 1. Install system dependencies with Node.js from Nodesource
+# 1. Install system dependencies
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
-    build-essential \
-    git \
-    libvips \
-    pkg-config \
-    libpq-dev \
-    curl \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && npm install -g yarn \
+      build-essential git libvips pkg-config libpq-dev curl \
+      nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Install gems first
+# 2. Install gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --jobs $(nproc) --retry 3
 
-# 3. Install Node modules including Tailwind
+# 3. Copy package.json and package-lock.json
 COPY package.json package-lock.json ./
+
+# 4. Install npm dependencies including Tailwind CLI locally
 RUN npm install --legacy-peer-deps
-RUN npm install -D tailwindcss postcss autoprefixer @tailwindcss/forms @tailwindcss/typography
 
-# Verify Tailwind installation
-RUN ls -la node_modules/.bin/tailwindcss || echo "Tailwind CLI not found!"
-
-# 4. Copy application code
+# 5. Copy application code
 COPY . .
 
-# Build arguments for secrets
+# 6. Set build environment variables
 ARG RAILS_MASTER_KEY
 ARG SECRET_KEY_BASE
-
-# Set environment variables
 ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
     SECRET_KEY_BASE=${SECRET_KEY_BASE} \
-    RAILS_SKIP_DATABASE=true
+    RAILS_SKIP_DATABASE=true \
+    NODE_ENV=production \
+    PATH=$PATH:./node_modules/.bin
 
-# 5. Build CSS using npm script
-RUN npm run build:css
+# 7. Build CSS
+RUN npx tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify
 
-# 6. Precompile assets
+# 8. Precompile Rails assets
 RUN RAILS_ENV=production bundle exec rails assets:precompile
 
 # --- Final image ---
