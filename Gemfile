@@ -16,13 +16,12 @@ gem "stimulus-rails"
 gem "cssbundling-rails"
 gem "importmap-rails"
 
-gem 'dotenv-rails', groups: [:development, :test]
-
 # Auth
 gem "devise"
 
 group :development, :test do
   gem "pry-rails"
+  gem "dotenv-rails"
 end
 
 group :development do
