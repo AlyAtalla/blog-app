@@ -10,8 +10,7 @@ ENV RAILS_ENV=production \
     BUNDLE_PATH=/usr/local/bundle \
     BUNDLE_WITHOUT=development:test \
     RAILS_SERVE_STATIC_FILES=true \
-    RAILS_LOG_TO_STDOUT=true \
-    NODE_ENV=production
+    RAILS_LOG_TO_STDOUT=true
 
 # --- Build stage ---
 FROM base as build
@@ -28,9 +27,9 @@ RUN apt-get update -qq && \
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --jobs $(nproc) --retry 3
 
-# 3. Install Node modules including Tailwind
+# 3. Install Node modules (including devDependencies like Tailwind)
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --include=dev
 
 # 4. Copy application code
 COPY . .
@@ -42,11 +41,11 @@ ARG SECRET_KEY_BASE
 # Set environment variables
 ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
     SECRET_KEY_BASE=${SECRET_KEY_BASE} \
-    RAILS_SKIP_DATABASE=true
+    RAILS_SKIP_DATABASE=true \
+    NODE_ENV=production
 
-# 5. Build CSS
-RUN npx tailwindcss -i ./app/assets/stylesheets/application.tailwind.css \
-    -o ./app/assets/builds/application.css --minify
+# 5. Build CSS using npm script
+RUN npm run build:css
 
 # 6. Precompile Rails assets
 RUN bundle exec rails assets:precompile
