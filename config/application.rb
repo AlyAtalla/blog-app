@@ -1,10 +1,9 @@
 require_relative "boot"
 
 # Load environment variables from .env before anything else
-if Rails.env.development? || Rails.env.test?
+if ENV["RAILS_ENV"] == "development" || ENV["RAILS_ENV"] == "test"
   require "dotenv/load"
 end
-
 
 require "rails/all"
 
