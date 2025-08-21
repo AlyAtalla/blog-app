@@ -1,76 +1,45 @@
-# syntax=docker/dockerfile:1
-
-ARG RUBY_VERSION=3.2.2
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
+# --- Build stage ---
+FROM ruby:3.2 AS build
 
 WORKDIR /rails
 
-ENV RAILS_ENV=production \
-    BUNDLE_DEPLOYMENT=1 \
-    BUNDLE_PATH=/usr/local/bundle \
-    BUNDLE_WITHOUT=development:test \
-    RAILS_SERVE_STATIC_FILES=true \
-    RAILS_LOG_TO_STDOUT=true
-
-# --- Build stage ---
-FROM base as build
-
-# 1. Install system dependencies + Node.js
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-      build-essential git libvips pkg-config libpq-dev curl && \
+# 1. Install dependencies
+RUN apt-get update -qq && apt-get install --no-install-recommends -y \
+    build-essential git libvips pkg-config libpq-dev curl && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
+    apt-get install -y nodejs npm && \
     rm -rf /var/lib/apt/lists/*
 
-# 2. Install gems first
+# 2. Install Ruby gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install --jobs $(nproc) --retry 3
+RUN bundle install
 
-# 3. Install Node modules (including devDependencies like Tailwind)
+# 3. Install JS deps
 COPY package.json package-lock.json ./
-RUN npm install --include=dev
+RUN npm install
 
-# 4. Copy application code
+# 4. Copy project files
 COPY . .
 
-# Build arguments for secrets
-ARG RAILS_MASTER_KEY
-ARG SECRET_KEY_BASE
-
-# Set environment variables
-ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
-    SECRET_KEY_BASE=${SECRET_KEY_BASE} \
-    RAILS_SKIP_DATABASE=true \
-    NODE_ENV=production
-
-# 5. Build CSS using npm script
+# 5. Build Tailwind
 RUN npm run build:css
 
-# 6. Precompile Rails assets
-RUN bundle exec rails assets:precompile
+# --- Final stage ---
+FROM ruby:3.2-slim
 
-# --- Final image ---
-FROM base
+WORKDIR /rails
 
 # Install runtime dependencies
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-      curl libsqlite3-0 libvips && \
+RUN apt-get update -qq && apt-get install --no-install-recommends -y \
+    libpq-dev libvips curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy artifacts from build stage
-COPY --from=build /usr/local/bundle /usr/local/bundle
+# Copy only what’s needed
 COPY --from=build /rails /rails
 
-# Setup application user and permissions
-RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp && \
-    chmod +x /rails/bin/docker-entrypoint
+# Ensure built CSS is present
+COPY --from=build /rails/app/assets/builds /rails/app/assets/builds
 
-USER rails:rails
+EXPOSE 3000
 
-EXPOSE ${PORT:-8080}
-
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "${PORT:-8080}"]
+CMD ["bin/rails", "server", "-b", "0.0.0.0"]
