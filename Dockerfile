@@ -31,7 +31,7 @@ RUN bundle install --jobs $(nproc) --retry 3
 # 3. Install Node modules including Tailwind
 COPY package.json package-lock.json ./
 RUN npm install --legacy-peer-deps
-RUN npm install -D tailwindcss postcss autoprefixer @tailwindcss/forms @tailwindcss/typography
+RUN npm install -D @tailwindcss/cli tailwindcss postcss autoprefixer @tailwindcss/forms @tailwindcss/typography
 
 # Verify Tailwind installation
 RUN ls -la node_modules/.bin/tailwindcss || echo "Tailwind CLI not found!"
